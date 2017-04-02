@@ -27,7 +27,11 @@ class EnrollmentsController < ApplicationController
     @enrollment = Enrollment.new(enrollment_params)
 
     respond_to do |format|
-      if @enrollment.save
+      course_id = @enrollment.course_id
+      course = Course.find_by(id: course_id)
+      quota = course.quota
+      students_in_course = get_students_in_course(course_id).size
+      if students_in_course < quota && @enrollment.save
         format.html { redirect_to @enrollment, notice: 'Enrollment was successfully created.' }
         format.json { render :show, status: :created, location: @enrollment }
       else
@@ -59,6 +63,17 @@ class EnrollmentsController < ApplicationController
       format.html { redirect_to enrollments_url, notice: 'Enrollment was successfully destroyed.' }
       format.json { head :no_content }
     end
+  end
+
+  def get_students_in_course(course_id)
+    people_in_course = Enrollment.where("course_id = ?", course_id)
+    list = Array.new([])
+
+    for person_course in people_in_course
+      person = Person.find_by(id: person_course.person_id)
+      list.push(person)
+    end
+    return list
   end
 
   private
