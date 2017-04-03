@@ -31,12 +31,17 @@ class EnrollmentsController < ApplicationController
       course = Course.find_by(id: course_id)
       quota = course.quota
       students_in_course = get_students_in_course(course_id).size
-      if students_in_course < quota && @enrollment.save
-        format.html { redirect_to @enrollment, notice: 'Enrollment was successfully created.' }
-        format.json { render :show, status: :created, location: @enrollment }
+      if students_in_course < quota
+        if @enrollment.save
+          format.html { redirect_to @enrollment, notice: 'Enrollment was successfully created.' }
+          format.json { render :show, status: :created, location: @enrollment }
+        else
+          format.html { render :new }
+          format.json { render json: @enrollment.errors, status: :unprocessable_entity }
+        end
       else
         format.html { render :new }
-        format.json { render json: @enrollment.errors, status: :unprocessable_entity }
+        flash[:notice] = ("quota exceeded")
       end
     end
   end

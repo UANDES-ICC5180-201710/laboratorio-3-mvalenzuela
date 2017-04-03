@@ -34,14 +34,19 @@ class CoursesController < ApplicationController
   # POST /courses.json
   def create
     @course = Course.new(course_params)
-
+    person = @course.teacher
     respond_to do |format|
-      if @course.save
-        format.html { redirect_to @course, notice: 'Course was successfully created.' }
-        format.json { render :show, status: :created, location: @course }
+      if person.is_professor == true
+        if @course.save
+          format.html { redirect_to @course, notice: 'Course was successfully created.' }
+          format.json { render :show, status: :created, location: @course }
+        else
+          format.html { render :new }
+          format.json { render json: @course.errors, status: :unprocessable_entity }
+        end
       else
         format.html { render :new }
-        format.json { render json: @course.errors, status: :unprocessable_entity }
+        flash[:notice] = ("person entered is not a professor")
       end
     end
   end

@@ -1,11 +1,19 @@
 <%= form_for(enrollment) do |f| %>
-  <% if enrollment.errors.any? %>
+  <% if enrollment.errors.any? || notice%>
     <div id="error_explanation">
-      <h2><%= pluralize(enrollment.errors.count, "error") %> prohibited this enrollment from being saved:</h2>
-
+      <% if notice %>
+      <h2><%= "1 error" %>
+      <% else %>
+      <h2><%= pluralize(enrollment.errors.count, "error") %>
+      <% end %>
+        prohibited this enrollment from being saved:</h2>
       <ul>
-      <% enrollment.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
+      <% if notice %>
+      <li><%= notice %></li>
+      <% else %>
+        <% enrollment.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
       <% end %>
       </ul>
     </div>

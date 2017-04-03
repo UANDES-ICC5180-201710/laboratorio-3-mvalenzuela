@@ -1,11 +1,19 @@
 <%= form_for(course) do |f| %>
-  <% if course.errors.any? %>
+  <% if course.errors.any? || notice%>
     <div id="error_explanation">
-      <h2><%= pluralize(course.errors.count, "error") %> prohibited this course from being saved:</h2>
-
+      <% if notice %>
+      <h2><%= "1 error" %>
+      <% else %>
+      <h2><%= pluralize(course.errors.count, "error") %>
+      <% end %>
+        prohibited this course from being saved:</h2>
       <ul>
-      <% course.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
+      <% if notice %>
+      <li><%= notice %></li>
+      <% else %>
+        <% course.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
       <% end %>
       </ul>
     </div>
@@ -23,7 +31,7 @@
 
   <div class="field">
     <%= f.label :quota %>
-    <%= f.number_field :quota %>
+    <%= f.number_field :quota, min:"1" %>
   </div>
 
   <div class="field">
